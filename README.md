@@ -5,6 +5,13 @@ Built with **vanilla JavaScript, HTML and CSS** - no frameworks, no build step, 
 
 > Your data never leaves your browser. Everything is stored in `localStorage`.
 
+## Live Demo
+
+**[Try Workfolio Live →](https://erfankhadiv.github.io/Workfolio/)**
+
+Build, customize, and export your resume directly in your browser — no installation required.
+
+
 ## Features
 
 **Content**
