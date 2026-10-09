@@ -12,10 +12,17 @@
         poppins: "'Poppins', 'Segoe UI', Arial, sans-serif",
     };
 
+    function displayText(value) {
+        if (value === undefined || value === null) return "";
+        const text = String(value);
+        return /^(null|undefined)$/i.test(text.trim()) ? "" : text;
+    }
+
     function el(tag, cls, text) {
         const n = document.createElement(tag);
         if (cls) n.className = cls;
-        if (text !== undefined && text !== "") n.textContent = text;
+        const safeText = displayText(text);
+        if (safeText !== "") n.textContent = safeText;
         return n;
     }
 
@@ -112,7 +119,8 @@
                 item.append(head(el("strong", "item-title", title || e.university), W.formatPeriod(e.from, e.to)));
                 if (e.university && title) item.append(el("div", "item-sub", e.university));
                 if (e.gpa) item.append(el("div", "item-meta", `GPA: ${e.gpa}`));
-                if (e.details) item.append(el("p", "item-text", e.details));
+                const ul = bulletList(e.details);
+                if (ul) item.append(ul);
                 return item;
             });
         },
@@ -134,18 +142,26 @@
         },
 
         languages(d, s) {
-            const rows = d.languages.filter((x) => x.name);
+            const usable = (value) => {
+                if (value === undefined || value === null) return "";
+                const text = String(value).trim();
+                return /^(null|undefined)$/i.test(text) ? "" : text;
+            };
+            const rows = d.languages.filter((x) => usable(x.name));
             if (!rows.length) return null;
             return rows.map((x) => {
                 const row = el("div", "skill-row lang-row");
-                const label = el("span", "skill-name");
-                label.append(document.createTextNode(x.name));
-                if (s.skillStyle === "tags" || x.note) {
-                    const extra = [s.skillStyle === "tags" ? W.levelLabel(x.level) : "", x.note].filter(Boolean).join(" \u00b7 ");
-                    if (extra) label.append(el("small", "lang-note", extra));
-                }
+                const label = el("span", "skill-name", usable(x.name));
+                const level = usable(x.level);
+                const note = usable(x.note);
+                const proficiency = s.skillStyle === "tags" && level ? W.levelLabel(level) : "";
+                const extra = [proficiency, note].filter(Boolean).join(" · ");
+                if (extra) label.append(el("small", "lang-note", extra));
                 row.append(label);
-                row.append(levelVisual(W.LEVEL_RATE[x.level] || 2, 5, s.skillStyle));
+                // Tag mode has no level graphic. Never append a null value: Node.append(null)
+                // creates a visible text node reading "null".
+                const visual = s.skillStyle === "tags" ? null : levelVisual(W.LEVEL_RATE[level] || 2, 5, s.skillStyle);
+                if (visual) row.append(visual);
                 return row;
             });
         },

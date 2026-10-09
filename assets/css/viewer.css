@@ -82,7 +82,36 @@ body.preview #scaler { box-shadow: none; }
     .pg-guide { display: none !important; }
     #panel, .banner { display: none !important; }
     #app { display: block; }
-    #stage { padding: 0; overflow: visible; }
-    #fit { width: auto !important; height: auto !important; }
+    #stage { display: block !important; padding: 0; overflow: visible !important; min-height: 0; }
+    body.mobile-dock-active #stage { display: block !important; }
+    #mobilePreviewDock { display: none !important; }
+    #fit { width: auto !important; height: auto !important; margin: 0 !important; }
     #scaler { transform: none !important; box-shadow: none; width: auto; }
+    .resume { margin: 0 !important; }
+}
+
+/* ---------- persistent mobile live preview ---------- */
+.mobile-preview-dock { display: none; }
+.mobile-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 34px; padding-bottom: 7px; font-size: .84rem; font-weight: 600; }
+.preview-toggle { appearance: none; border: 1px solid #2563eb; background: #eff6ff; color: #1d4ed8; border-radius: 8px; padding: 6px 10px; min-height: 32px; font: inherit; font-size: .78rem; cursor: pointer; }
+#mobilePreviewViewport { width: 100%; min-width: 0; height: 145px; overflow: hidden; background: #eef2f7; border: 1px solid #e5e7eb; border-radius: 8px; }
+#mobilePreviewViewport #fit { padding: 0; }
+
+@media (max-width: 900px) {
+    #app { display: block; }
+    #panel { position: static; height: auto; max-height: none; overflow: visible; border-right: none; border-bottom: none; padding: 12px 14px 24px; }
+    .mobile-preview-dock:not([hidden]) { display: block; position: sticky; top: 0; z-index: 25; margin: 0 -14px 12px; padding: 8px 14px 10px; background: rgba(255,255,255,.97); border-bottom: 1px solid #d1d5db; box-shadow: 0 4px 14px rgba(15,23,42,.1); }
+    body.mobile-dock-active #stage { display: none; }
+    #panel .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #panel .actions .btn:nth-child(2) { grid-column: auto; }
+    #panel .actions .btn { min-width: 0; min-height: 42px; }
+    body.preview #mobilePreviewDock { display: none !important; }
+    body.preview #stage { display: block; }
+    body.preview #app { display: block; }
+    body.preview #panel { display: none; }
+    body.preview-expanded #mobilePreviewDock,
+    #mobilePreviewDock.preview-expanded { position: fixed; inset: 0; z-index: 9999; width: 100vw; height: 100dvh; margin: 0; padding: 10px 12px; background: #fff; overflow: hidden; border: 0; box-shadow: none; }
+    body.preview-expanded #mobilePreviewViewport { height: calc(100dvh - 55px); overflow: auto; border: 0; background: #e5e7eb; }
+    body.preview-expanded #mobilePreviewViewport #fit { margin: 0 auto 16px; }
+    body.preview-expanded { overflow: hidden; }
 }

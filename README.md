@@ -1,9 +1,9 @@
 # Workfolio
 
-A free, browser-based resume builder. Fill in a form, pick one of **five templates**, restyle it live, and download a PDF.
-Built with **vanilla JavaScript, HTML and CSS** - no frameworks, no build step, no backend.
+A free, browser-based resume builder. Follow a guided form, pick one of **five templates**, restyle it live, and export your resume as PDF, editable Word, Excel, or plain text.
+Built with **vanilla JavaScript, HTML and CSS** - no app framework, build step, or backend.
 
-> Your data never leaves your browser. Everything is stored in `localStorage`.
+> Your resume data stays in your browser and is saved in `localStorage`. The Word and Excel exports are built in the browser without any library; resume content is never uploaded.
 
 ## Live Demo
 
@@ -27,23 +27,27 @@ Build, customize, and export your resume directly in your browser — no install
 ## Features
 
 **Content**
-- Personal info, links (LinkedIn, GitHub, portfolio), summary and optional profile photo
+- Personal info, links (LinkedIn, GitHub, portfolio), summary and optional profile photo with an in-browser crop tool
 - Repeatable sections: education (GPA, details), experience (achievement bullets), projects, skills, languages (with certificate such as IELTS), certifications and awards
 - Interests, with validation and inline error messages
-- Autosaved draft that survives reloads (and migrates data saved by older versions)
+- Guided, step-by-step form with progress, Back / Next controls, example placeholders, and autosave
+- Draft that survives reloads (and migrates data saved by older versions)
 
 **Design**
 - 5 templates: Classic (ATS-friendly), Sidebar, Banner, Minimal, Executive
 - Live template previews that use *your* data
 - Accent color picker, font choice, skill style (bars / stars / tags), spacing and paper size (A4 / US Letter)
+- Sticky mobile live preview with an expanded full-screen preview while changing design settings
 - Show / hide and re-order any section; hide photo or age
 - Page-aware layout: entries and headings are never cut by a page break, dashed page guides show where each page ends, and multi-page resumes get "Page 1 of 2" numbers (can be switched off)
 - Page counter that tells you when the resume spills onto a second page
 
 **Services**
 - Resume-strength score with concrete tips
-- Download PDF or print: sharp vector PDF with selectable text (ATS-friendly), made with the browser's own "Save as PDF"
+- Download PDF or print: opens a clean, resume-only print view; choose Chrome’s “Save as PDF” for selectable text
 - Plain-text export for application forms and ATS
+- Editable Word (`.docx`) export that follows the selected template: header, colored sidebar or banner, real bullet lists, right-aligned dates, shaded skill tags and level dots, clickable links. Template fonts are mapped to Georgia / Calibri so it looks right on any machine
+- Excel (`.xlsx`) export with one sheet per section, for tracking applications or reusing the data
 - JSON export / import for backups and moving between devices
 - One-click sample data to explore the templates
 
@@ -78,8 +82,11 @@ Workfolio/
     │   ├── core.js         # data model, migration, sample data, score, text export
     │   ├── render.js       # builds the resume DOM from the data
     │   ├── paginate.js     # page-break layout: keeps entries and headings whole across pages
+    │   ├── zip.js          # tiny ZIP writer shared by the Office exporters
+    │   ├── word-export.js  # .docx exporter (template-aware WordprocessingML)
+    │   ├── excel-export.js # .xlsx exporter (one sheet per section)
     │   ├── index.js        # form logic, validation, autosave, previews
-    │   └── viewer.js       # design panel, PDF / print / export
+    │   └── viewer.js       # design panel, PDF / print / export buttons
     └── imgs/               # logo, avatar and README screenshots
 ```
 

@@ -124,6 +124,24 @@
         d.education.forEach((e) => { e.from = month(e.from); e.to = month(e.to); });
         d.jobs.forEach((j) => { j.from = month(j.from); j.to = month(j.to); });
         d.certs.forEach((c) => { c.date = month(c.date); });
+        // Older drafts or imported JSON can contain the literal strings "null" or
+        // "undefined". Treat them as empty values rather than showing them in resumes.
+        const cleanField = (value) => {
+            if (value === undefined || value === null) return "";
+            const text = String(value).trim();
+            return /^(null|undefined)$/i.test(text) ? "" : text;
+        };
+        d.skills.forEach((skill) => {
+            skill.name = cleanField(skill.name);
+            const rate = cleanField(skill.rate);
+            skill.rate = /^[1-5]$/.test(rate) ? rate : "";
+        });
+        d.languages.forEach((language) => {
+            language.name = cleanField(language.name);
+            language.note = cleanField(language.note);
+            const level = cleanField(language.level);
+            language.level = LEVEL_RATE[level] ? level : "";
+        });
         d.settings = normSettings(r.settings);
         return d;
     }
@@ -311,7 +329,7 @@
                     const deg = degreeLabel(e.degree);
                     out.push("", [deg && e.major ? `${deg} in ${e.major}` : e.major || deg, e.university].filter(Boolean).join(", ") + (formatPeriod(e.from, e.to) ? ` (${formatPeriod(e.from, e.to)})` : ""));
                     if (e.gpa) out.push("GPA: " + e.gpa);
-                    if (e.details) out.push(e.details);
+                    bullets(e.details).forEach((b) => out.push("- " + b));
                 });
             }
             if (id === "skills" && d.skills.some((s) => s.name)) { section("Skills"); out.push(d.skills.filter((s) => s.name).map((s) => s.name).join(", ")); }
@@ -338,7 +356,7 @@
                 about: "Developer with 3 years of experience building fast, accessible web apps. I enjoy turning messy requirements into simple interfaces and care about clean, testable code.",
                 interests: "Open source, Chess, Trail running, Photography",
             },
-            education: [{ degree: "bachelor", major: "Computer Science", university: "Technical University of Berlin", from: "2017-10", to: "2021-07", gpa: "3.8 / 4.0", details: "Thesis: real-time collaboration in the browser." }],
+            education: [{ degree: "bachelor", major: "Computer Science", university: "Technical University of Berlin", from: "2017-10", to: "2021-07", gpa: "3.8 / 4.0", details: "Thesis on real-time collaboration in the browser\nGraduated with honors" }],
             jobs: [
                 { title: "Frontend Developer", company: "Northwind Labs", location: "Berlin", from: "2022-02", to: "", description: "Rebuilt the customer dashboard in React, cutting load time by 45%\nIntroduced component tests that raised coverage from 30% to 85%\nMentored two junior developers through code reviews" },
                 { title: "Junior Web Developer", company: "Pixel & Co", location: "Remote", from: "2021-08", to: "2022-01", description: "Built 10+ responsive marketing sites\nAutomated image optimisation in the build pipeline" },

@@ -28,12 +28,54 @@
     function fit() {
         if (preview) return;
         const page = W.PAGE[settings.paper];
-        const available = $("stage").clientWidth - 40;
+        const docked = $("mobilePreviewViewport").contains($("fit"));
+        const host = docked ? $("mobilePreviewViewport") : $("stage");
+        const available = Math.max(220, host.clientWidth - (docked ? 12 : 40));
         const scale = Math.min(1, available / page.w);
         $("scaler").style.transform = `scale(${scale})`;
         $("fit").style.width = `${page.w * scale}px`;
         $("fit").style.height = `${resume.offsetHeight * scale}px`;
     }
+
+    // On narrow screens, keep a compact live preview beside the design controls.
+    // Moving the existing preview (instead of making a second copy) keeps it in sync.
+    const mobileQuery = window.matchMedia("(max-width: 900px)");
+    function syncMobilePreviewHost() {
+        if (preview) return;
+        const dock = $("mobilePreviewDock");
+        const viewport = $("mobilePreviewViewport");
+        const fitBox = $("fit");
+        const mobile = mobileQuery.matches;
+        dock.hidden = !mobile;
+        if (mobile) {
+            document.body.classList.add("mobile-dock-active");
+            if (fitBox.parentElement !== viewport) viewport.append(fitBox);
+        } else {
+            document.body.classList.remove("mobile-dock-active", "preview-expanded");
+            dock.classList.remove("preview-expanded");
+            $("toggleMobilePreview").textContent = "Expand preview";
+            $("toggleMobilePreview").setAttribute("aria-expanded", "false");
+            if (fitBox.parentElement !== $("stage")) {
+                const banner = $("sampleBanner");
+                $("stage").insertBefore(fitBox, banner.nextSibling);
+            }
+        }
+    }
+
+    function toggleExpandedPreview(force) {
+        if (preview || !mobileQuery.matches) return;
+        const expanded = typeof force === "boolean" ? force : !document.body.classList.contains("preview-expanded");
+        document.body.classList.toggle("preview-expanded", expanded);
+        $("mobilePreviewDock").classList.toggle("preview-expanded", expanded);
+        $("toggleMobilePreview").textContent = expanded ? "Close preview" : "Expand preview";
+        $("toggleMobilePreview").setAttribute("aria-expanded", String(expanded));
+        relayout();
+    }
+
+    $("toggleMobilePreview").addEventListener("click", () => toggleExpandedPreview());
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && document.body.classList.contains("preview-expanded")) toggleExpandedPreview(false);
+    });
 
     // keep entries and headings whole across pages (see paginate.js); the embedded preview shows page 1 only
     function layoutPages() {
@@ -190,30 +232,164 @@
     });
 
     // ---------- exports ----------
-    // The browser's own "Save as PDF" keeps text as real vector text (sharp at any zoom,
-    // selectable, readable by ATS) and honours the page breaks laid out by paginate.js.
-    // The document title becomes the suggested file name.
-    function downloadPdf() {
-        const previousTitle = document.title;
-        const restore = () => {
-            document.title = previousTitle;
-            window.removeEventListener("afterprint", restore);
-        };
-        window.addEventListener("afterprint", restore);
-        document.title = W.fileBase(data);
-        window.print();
+    // Print a clean document containing only the resume. Printing the live editor page
+    // can work at a mobile-emulated viewport but become blank on desktop because its
+    // preview/scaler layout is interactive and changes parents at different widths.
+    // A dedicated print window avoids relying on the editor's responsive state.
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
     }
 
-    $("pdfBtn").addEventListener("click", downloadPdf);
-    $("printBtn").addEventListener("click", () => window.print());
+    function printResume() {
+        if (preview) return;
+        // Open synchronously from the click event so popup blockers allow it.
+        const printWindow = window.open("about:blank", "_blank");
+        if (!printWindow) {
+            alert("Chrome blocked the print window. Allow pop-ups for this site and try again.");
+            return;
+        }
+
+        // Refresh pagination and fit values before taking the clone. The printed copy
+        // is not inside #fit/#scaler and therefore cannot inherit screen-only transforms.
+        relayout();
+        const clone = resume.cloneNode(true);
+        clone.querySelectorAll(".pg-guide").forEach((node) => node.remove());
+        clone.style.margin = "0";
+        clone.style.transform = "none";
+        clone.style.boxShadow = "none";
+
+        const stylesheetLinks = [...document.querySelectorAll('link[rel="stylesheet"]')]
+            .filter((link) => link.href)
+            .map((link) => `<link rel="stylesheet" href="${escapeHtml(link.href)}">`)
+            .join("\n");
+        const page = settings.paper === "letter" ? "Letter" : "A4";
+        const title = escapeHtml(W.fileBase(data));
+        const pageStyle = $("pageStyle").textContent || "";
+
+        printWindow.document.open();
+        printWindow.document.write(`<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title>
+${stylesheetLinks}
+<style>
+${pageStyle}
+@page { size: ${page}; margin: 0; }
+html, body { margin: 0 !important; padding: 0 !important; width: auto !important; min-height: 0 !important; background: #fff !important; overflow: visible !important; }
+body { display: block !important; }
+#resume.resume { margin: 0 !important; box-shadow: none !important; transform: none !important; max-width: none !important; break-after: auto; }
+.pg-guide { display: none !important; }
+.pg-spacer { display: block !important; }
+@media print {
+  html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+  #resume.resume { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+${clone.outerHTML}
+<script>
+(function () {
+  var started = false;
+  async function startPrint() {
+    if (started) return;
+    started = true;
+    try {
+      if (document.fonts && document.fonts.ready) {
+        await Promise.race([document.fonts.ready, new Promise(function (resolve) { setTimeout(resolve, 1800); })]);
+      }
+      var images = Array.from(document.images);
+      await Promise.race([
+        Promise.all(images.map(function (img) {
+          if (img.complete) return Promise.resolve();
+          return new Promise(function (resolve) {
+            img.addEventListener('load', resolve, { once: true });
+            img.addEventListener('error', resolve, { once: true });
+          });
+        })),
+        new Promise(function (resolve) { setTimeout(resolve, 1800); })
+      ]);
+    } catch (_) {}
+    setTimeout(function () {
+      window.focus();
+      window.print();
+    }, 250);
+  }
+  window.addEventListener('load', startPrint, { once: true });
+  window.addEventListener('afterprint', function () {
+    setTimeout(function () { window.close(); }, 400);
+  });
+  // Covers browsers that complete the new about:blank document before load listeners fire.
+  setTimeout(startPrint, 1500);
+})();
+</script>
+</body>
+</html>`);
+        printWindow.document.close();
+    }
+
+    $("pdfBtn").addEventListener("click", printResume);
+    $("printBtn").addEventListener("click", printResume);
+
     $("txtBtn").addEventListener("click", () => W.download(`${W.fileBase(data)}.txt`, W.toText(data), "text/plain;charset=utf-8"));
     $("jsonBtn").addEventListener("click", () => W.download(`${W.fileBase(data)}.json`, JSON.stringify(data, null, 2), "application/json"));
 
+    function saveBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
+
+    // shared by the Word and Excel buttons: busy state, validation, download, friendly error
+    async function exportOffice(buttonId, exporter, extension, busyLabel, hint) {
+        if (!exporter || typeof exporter.buildBlob !== "function") {
+            alert("This export could not initialize. Reload the page and try again.");
+            return;
+        }
+        const button = $(buttonId);
+        const originalLabel = button.innerHTML;
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+        button.innerHTML = `<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> ${busyLabel}`;
+        try {
+            const blob = await exporter.buildBlob(data, W);
+            if (!(blob instanceof Blob) || blob.size < 300) throw new Error("The generated file is empty or invalid.");
+            saveBlob(blob, `${W.fileBase(data)}.${extension}`);
+        } catch (error) {
+            console.error(`${extension} export failed`, error);
+            alert(`The ${extension.toUpperCase()} export failed. ${hint}`);
+        } finally {
+            button.disabled = false;
+            button.removeAttribute("aria-busy");
+            button.innerHTML = originalLabel;
+        }
+    }
+
+    const downloadWord = () => exportOffice("docxBtn", window.WorkfolioWordExport, "docx", "Creating Word file…", "Please try again. If the problem continues, remove the profile photo and retry.");
+    const downloadExcel = () => exportOffice("xlsxBtn", window.WorkfolioExcelExport, "xlsx", "Creating Excel file…", "Please try again.");
+
+    $("docxBtn").addEventListener("click", downloadWord);
+    $("xlsxBtn").addEventListener("click", downloadExcel);
+
     // ---------- init ----------
-    window.addEventListener("resize", fit);
+    window.addEventListener("resize", () => { syncMobilePreviewHost(); relayout(); });
+    mobileQuery.addEventListener?.("change", () => { syncMobilePreviewHost(); relayout(); });
     if (window.ResizeObserver) new ResizeObserver(() => { fit(); updatePageInfo(); }).observe(resume);
     if (document.fonts?.ready) document.fonts.ready.then(relayout); // web fonts / icons change text heights
 
+    syncMobilePreviewHost();
     buildTemplates();
     buildSwatches();
     buildSections();

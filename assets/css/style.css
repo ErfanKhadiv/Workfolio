@@ -208,6 +208,8 @@ textarea.baseInput { resize: vertical; }
 
 .counter { color: #6b7280; font-size: 0.8rem; text-align: right; }
 
+.photo-crop-help { margin: -2px 0 8px; color: #6b7280; font-size: .84rem; line-height: 1.4; }
+
 .photoRow {
     display: flex;
     align-items: center;
@@ -361,3 +363,76 @@ footer {
 .tplCard small { color: #6b7280; }
 .tplThumb { position: relative; width: 260px; height: 371px; overflow: hidden; background: #fff; border: 1px solid #d1d5db; border-radius: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, .12); }
 .tplThumb iframe { position: absolute; top: 0; left: 0; width: 794px; height: 1123px; border: 0; transform-origin: top left; pointer-events: none; }
+
+/* ---------- guided, step-by-step form ---------- */
+.wizard-step[hidden] { display: none !important; }
+.wizard-step-intro { margin: 0 0 12px; }
+.wizard-step-intro h3 { margin: 0 0 5px; font-size: clamp(1.25rem, 3vw, 1.6rem); color: #111827; }
+.wizard-step-intro p { margin: 0 0 16px; color: #6b7280; font-size: .95rem; }
+.wizard-progress { margin: 0 0 18px; }
+.wizard-progress-label { font-weight: 600; font-size: .92rem; margin-bottom: 8px; }
+.wizard-progress-track { height: 7px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+.wizard-progress-fill { height: 100%; width: 0; background: var(--blue); border-radius: inherit; transition: width .22s ease; }
+.wizard-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 20px 0 12px; }
+.wizard-nav .base-btn { font-size: 1rem; }
+.wizard-nav .ghost-btn, .templateBack { min-height: 44px; }
+.templateBack { margin: 0 0 18px; }
+.fieldHint { color: #6b7280; font-size: .78rem; }
+
+@media (max-width: 640px) {
+    .container { width: min(94%, 1200px); }
+    #brand-box { top: 18px; margin-left: 4px; }
+    #brand-link a { font-size: 1.8rem; }
+    #header-box { min-height: 76svh; padding-top: 60px; }
+    #formSec { padding: 28px 0; margin: 16px 0; }
+    #formBox { padding: 14px; }
+    .formHeader { font-size: 1.35rem; }
+    .formItems { gap: 12px; }
+    .formItem, .entry.compact .formItem { flex-basis: 100%; }
+    .entry { padding: 14px 12px; }
+    .entry .formItems { margin-right: 0; padding-top: 24px; }
+    .entry .removeEntry { top: 7px; right: 7px; }
+    .toolRow { display: grid; grid-template-columns: 1fr; }
+    .toolRow .ghost-btn { width: 100%; min-height: 42px; }
+    .wizard-nav { position: sticky; bottom: 8px; z-index: 5; background: #fff; padding: 10px; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 6px 18px rgba(15, 23, 42, .12); }
+    .wizard-nav .base-btn { padding: 10px 14px; }
+    .tplCard { width: min(100%, 300px); }
+    .tplThumb { margin: 0 auto; }
+    .footer-box { padding: 24px 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wizard-progress-fill { transition: none; }
+}
+
+/* ---------- profile photo cropper ---------- */
+.photo-crop-dialog {
+    width: min(94vw, 460px);
+    max-width: 460px;
+    padding: 0;
+    border: 0;
+    border-radius: 18px;
+    color: #111827;
+    background: transparent;
+    box-shadow: 0 24px 80px rgba(15, 23, 42, .28);
+}
+.photo-crop-dialog::backdrop { background: rgba(15, 23, 42, .62); backdrop-filter: blur(3px); }
+.photo-crop-card { background: #fff; border-radius: 18px; padding: 20px; }
+.photo-crop-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.photo-crop-head h2 { margin: 0 0 5px; font-size: 1.25rem; color: #111827; }
+.photo-crop-head p { margin: 0; color: #6b7280; font-size: .9rem; line-height: 1.45; }
+.photo-crop-close { flex: 0 0 auto; border: 1px solid #e5e7eb; border-radius: 9px; background: #fff; color: #374151; width: 36px; height: 36px; font-size: 1.45rem; line-height: 1; cursor: pointer; }
+.photo-crop-canvas-wrap { width: min(100%, 320px); aspect-ratio: 1; margin: 0 auto 16px; overflow: hidden; border-radius: 12px; background: #e5e7eb; border: 1px solid #d1d5db; }
+#photoCropCanvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+#photoCropCanvas.is-dragging { cursor: grabbing; }
+.photo-crop-zoom { display: grid; grid-template-columns: auto minmax(0, 1fr) 38px; align-items: center; gap: 12px; margin: 0 0 18px; font-weight: 600; font-size: .9rem; }
+.photo-crop-zoom input { width: 100%; accent-color: var(--blue); }
+.photo-crop-zoom output { text-align: right; color: #4b5563; font-variant-numeric: tabular-nums; }
+.photo-crop-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.photo-crop-actions button { min-height: 44px; }
+@media (max-width: 480px) {
+    .photo-crop-dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+    .photo-crop-card { padding: 16px; }
+    .photo-crop-actions { flex-direction: column-reverse; }
+    .photo-crop-actions button { width: 100%; justify-content: center; }
+}

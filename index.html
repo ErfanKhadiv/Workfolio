@@ -90,45 +90,46 @@
                                 <div class="formItems">
                                     <div class="formItem">
                                         <label for="firstName">First Name <b class="req">*</b></label>
-                                        <input id="firstName" name="firstName" class="baseInput" type="text" autocomplete="given-name" required />
+                                        <input id="firstName" name="firstName" class="baseInput" type="text" autocomplete="given-name" placeholder="e.g., Alex" required />
                                         <small class="errorMsg" data-error-for="firstName"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="lastName">Last Name <b class="req">*</b></label>
-                                        <input id="lastName" name="lastName" class="baseInput" type="text" autocomplete="family-name" required />
+                                        <input id="lastName" name="lastName" class="baseInput" type="text" autocomplete="family-name" placeholder="e.g., Morgan" required />
                                         <small class="errorMsg" data-error-for="lastName"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="professionalTitle">Professional Title <b class="req">*</b></label>
-                                        <input id="professionalTitle" name="professionalTitle" class="baseInput" type="text" placeholder="ex: Frontend Developer" required />
+                                        <input id="professionalTitle" name="professionalTitle" class="baseInput" type="text" placeholder="e.g., Computer Engineering Graduate" required />
                                         <small class="errorMsg" data-error-for="professionalTitle"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="age">Age (optional)</label>
-                                        <input id="age" name="age" class="baseInput" type="number" min="14" max="100" inputmode="numeric" />
+                                        <input id="age" name="age" class="baseInput" type="number" min="14" max="100" inputmode="numeric" placeholder="e.g., 22" />
                                         <small class="errorMsg" data-error-for="age"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="emailAddress">Email Address <b class="req">*</b></label>
-                                        <input id="emailAddress" name="emailAddress" class="baseInput" type="email" autocomplete="email" placeholder="ex: example@gmail.com" required />
+                                        <input id="emailAddress" name="emailAddress" class="baseInput" type="email" autocomplete="email" placeholder="e.g., alex@example.com" required />
                                         <small class="errorMsg" data-error-for="emailAddress"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="phoneNumber">Phone Number</label>
-                                        <input id="phoneNumber" name="phoneNumber" class="baseInput" type="tel" autocomplete="tel" placeholder="ex: +98 123-456-7890" />
+                                        <input id="phoneNumber" name="phoneNumber" class="baseInput" type="tel" autocomplete="tel" placeholder="e.g., +1 555 123 4567" />
                                         <small class="errorMsg" data-error-for="phoneNumber"></small>
                                     </div>
                                     <div class="formItem wide">
                                         <label for="address">Address / Location</label>
-                                        <input id="address" name="address" class="baseInput" type="text" autocomplete="street-address" placeholder="ex: Milan, Italy" />
+                                        <input id="address" name="address" class="baseInput" type="text" autocomplete="street-address" placeholder="e.g., Milan, Italy" />
                                     </div>
                                     <div class="formItem wide">
                                         <label for="aboutMe">Summary</label>
-                                        <textarea id="aboutMe" name="aboutMe" class="baseInput" rows="4" maxlength="600" placeholder="2-3 sentences about who you are and what you do best."></textarea>
+                                        <textarea id="aboutMe" name="aboutMe" class="baseInput" rows="4" maxlength="600" placeholder="e.g., Computer engineering graduate interested in AI, software development, and solving practical problems."></textarea>
                                         <small class="counter" id="aboutCounter">0 / 600</small>
                                     </div>
                                     <div class="formItem wide">
                                         <label for="profileImgInput">Profile Image (optional)</label>
+                                        <p class="photo-crop-help">After choosing a photo, drag to reposition and adjust the zoom before saving.</p>
                                         <div class="photoRow">
                                             <img id="photoPreview" src="assets/imgs/avatar.svg" alt="Profile preview" width="64" height="64" />
                                             <input type="file" id="profileImgInput" accept="image/*" class="baseInput" />
@@ -145,17 +146,17 @@
                                 <div class="formItems">
                                     <div class="formItem">
                                         <label for="linkedin">LinkedIn</label>
-                                        <input id="linkedin" name="linkedin" class="baseInput" type="text" placeholder="linkedin.com/in/your-name" />
+                                        <input id="linkedin" name="linkedin" class="baseInput" type="text" placeholder="e.g., linkedin.com/in/your-name" />
                                         <small class="errorMsg" data-error-for="linkedin"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="github">GitHub</label>
-                                        <input id="github" name="github" class="baseInput" type="text" placeholder="github.com/your-name" />
+                                        <input id="github" name="github" class="baseInput" type="text" placeholder="e.g., github.com/your-name" />
                                         <small class="errorMsg" data-error-for="github"></small>
                                     </div>
                                     <div class="formItem">
                                         <label for="website">Website / Portfolio</label>
-                                        <input id="website" name="website" class="baseInput" type="text" placeholder="your-site.dev" />
+                                        <input id="website" name="website" class="baseInput" type="text" placeholder="e.g., yourportfolio.dev" />
                                         <small class="errorMsg" data-error-for="website"></small>
                                     </div>
                                 </div>
@@ -208,7 +209,7 @@
                                 <legend class="blue-color formHeader">Interests</legend>
                                 <div class="formItem wide">
                                     <label for="interests">Interests (separate with commas)</label>
-                                    <input id="interests" name="interests" class="baseInput" type="text" placeholder="ex: Chess, Open source, Running" />
+                                    <input id="interests" name="interests" class="baseInput" type="text" placeholder="e.g., Open source, Chess, Running" />
                                 </div>
                             </fieldset>
                         </div>
