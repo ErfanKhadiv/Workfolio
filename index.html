@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Workfolio - a free, browser-based resume builder. Fill in a form, pick one of five templates, customize colors and fonts, and download your resume as a PDF."
+        />
+        <title>Workfolio | Resume Builder</title>
+        <link rel="icon" href="assets/imgs/favicon.svg" type="image/svg+xml" />
+        <link rel="stylesheet" href="assets/css/style.css" />
+        <!-- icons (Font Awesome Free) -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <!-- fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <!-- Start nav -->
+        <nav>
+            <div class="container">
+                <div id="brand-box">
+                    <span id="brand-link">
+                        <a href="#top" class="blue-color">Workfolio</a>
+                    </span>
+                </div>
+            </div>
+        </nav>
+        <!-- End nav -->
+
+        <!-- Start header -->
+        <header id="top">
+            <div class="container">
+                <div id="header-box">
+                    <h1 id="header-title" class="blue-color">
+                        Create, Share and <br />
+                        Get Employed
+                    </h1>
+                    <p id="header-text">
+                        Easily create a structured resume for yourself
+                    </p>
+                    <a href="#formSec" id="header-btn" class="base-btn"
+                        >Start Now</a
+                    >
+                </div>
+            </div>
+        </header>
+        <!-- End header -->
+
+        <!-- start main -->
+        <main>
+            <form id="resumeForm" novalidate autocomplete="on">
+                <section id="formSec">
+                    <div class="container">
+                        <h2 class="formTitle">Fill The Form</h2>
+                        <p id="draftStatus" class="draftStatus" aria-live="polite">
+                            Your progress is saved automatically in this browser.
+                        </p>
+
+                        <div class="toolRow">
+                            <button type="button" class="ghost-btn" id="sampleBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> Load sample data</button>
+                            <button type="button" class="ghost-btn" id="importBtn"><i class="fa-solid fa-file-import"></i> Import JSON</button>
+                            <button type="button" class="ghost-btn" id="exportBtn"><i class="fa-solid fa-file-export"></i> Export JSON</button>
+                            <input type="file" id="importInput" accept="application/json,.json" hidden />
+                        </div>
+
+                        <div id="scoreCard" class="scoreCard" aria-live="polite">
+                            <div class="scoreTop">
+                                <strong>Resume strength</strong>
+                                <span id="scoreText">0%</span>
+                            </div>
+                            <div class="scoreBar"><div id="scoreFill"></div></div>
+                            <ul id="scoreTips"></ul>
+                        </div>
+
+                        <div id="formBox">
+                            <!-- Personal information -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Personal Information</legend>
+                                <div class="formItems">
+                                    <div class="formItem">
+                                        <label for="firstName">First Name <b class="req">*</b></label>
+                                        <input id="firstName" name="firstName" class="baseInput" type="text" autocomplete="given-name" required />
+                                        <small class="errorMsg" data-error-for="firstName"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="lastName">Last Name <b class="req">*</b></label>
+                                        <input id="lastName" name="lastName" class="baseInput" type="text" autocomplete="family-name" required />
+                                        <small class="errorMsg" data-error-for="lastName"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="professionalTitle">Professional Title <b class="req">*</b></label>
+                                        <input id="professionalTitle" name="professionalTitle" class="baseInput" type="text" placeholder="ex: Frontend Developer" required />
+                                        <small class="errorMsg" data-error-for="professionalTitle"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="age">Age (optional)</label>
+                                        <input id="age" name="age" class="baseInput" type="number" min="14" max="100" inputmode="numeric" />
+                                        <small class="errorMsg" data-error-for="age"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="emailAddress">Email Address <b class="req">*</b></label>
+                                        <input id="emailAddress" name="emailAddress" class="baseInput" type="email" autocomplete="email" placeholder="ex: example@gmail.com" required />
+                                        <small class="errorMsg" data-error-for="emailAddress"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="phoneNumber">Phone Number</label>
+                                        <input id="phoneNumber" name="phoneNumber" class="baseInput" type="tel" autocomplete="tel" placeholder="ex: +98 123-456-7890" />
+                                        <small class="errorMsg" data-error-for="phoneNumber"></small>
+                                    </div>
+                                    <div class="formItem wide">
+                                        <label for="address">Address / Location</label>
+                                        <input id="address" name="address" class="baseInput" type="text" autocomplete="street-address" placeholder="ex: Milan, Italy" />
+                                    </div>
+                                    <div class="formItem wide">
+                                        <label for="aboutMe">Summary</label>
+                                        <textarea id="aboutMe" name="aboutMe" class="baseInput" rows="4" maxlength="600" placeholder="2-3 sentences about who you are and what you do best."></textarea>
+                                        <small class="counter" id="aboutCounter">0 / 600</small>
+                                    </div>
+                                    <div class="formItem wide">
+                                        <label for="profileImgInput">Profile Image (optional)</label>
+                                        <div class="photoRow">
+                                            <img id="photoPreview" src="assets/imgs/avatar.svg" alt="Profile preview" width="64" height="64" />
+                                            <input type="file" id="profileImgInput" accept="image/*" class="baseInput" />
+                                            <button type="button" id="removePhoto" class="ghost-btn" hidden>Remove</button>
+                                        </div>
+                                        <small class="errorMsg" data-error-for="profileImgInput"></small>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Online presence -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Links</legend>
+                                <div class="formItems">
+                                    <div class="formItem">
+                                        <label for="linkedin">LinkedIn</label>
+                                        <input id="linkedin" name="linkedin" class="baseInput" type="text" placeholder="linkedin.com/in/your-name" />
+                                        <small class="errorMsg" data-error-for="linkedin"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="github">GitHub</label>
+                                        <input id="github" name="github" class="baseInput" type="text" placeholder="github.com/your-name" />
+                                        <small class="errorMsg" data-error-for="github"></small>
+                                    </div>
+                                    <div class="formItem">
+                                        <label for="website">Website / Portfolio</label>
+                                        <input id="website" name="website" class="baseInput" type="text" placeholder="your-site.dev" />
+                                        <small class="errorMsg" data-error-for="website"></small>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Education -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Education</legend>
+                                <div id="educationList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="education"><i class="fa-solid fa-plus"></i> Add education</button>
+                            </fieldset>
+
+                            <!-- Job experience -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Job Experience</legend>
+                                <div id="jobList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="job"><i class="fa-solid fa-plus"></i> Add experience</button>
+                            </fieldset>
+
+                            <!-- Projects -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Projects</legend>
+                                <div id="projectList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="project"><i class="fa-solid fa-plus"></i> Add project</button>
+                            </fieldset>
+
+                            <!-- Skills -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Skills</legend>
+                                <div id="skillList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="skill"><i class="fa-solid fa-plus"></i> Add skill</button>
+                            </fieldset>
+
+                            <!-- Languages -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Languages</legend>
+                                <div id="languageList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="language"><i class="fa-solid fa-plus"></i> Add language</button>
+                            </fieldset>
+
+                            <!-- Certifications -->
+                            <fieldset class="formGroup">
+                                <legend class="blue-color formHeader">Certifications &amp; Awards</legend>
+                                <div id="certList" class="entryList"></div>
+                                <button type="button" class="ghost-btn" data-add="cert"><i class="fa-solid fa-plus"></i> Add certification</button>
+                            </fieldset>
+
+                            <!-- Interests -->
+                            <fieldset class="formGroup noBorder">
+                                <legend class="blue-color formHeader">Interests</legend>
+                                <div class="formItem wide">
+                                    <label for="interests">Interests (separate with commas)</label>
+                                    <input id="interests" name="interests" class="baseInput" type="text" placeholder="ex: Chess, Open source, Running" />
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="formActions">
+                            <button type="button" id="resetBtn" class="ghost-btn danger"><i class="fa-solid fa-trash"></i> Clear everything</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="templateSelect">
+                    <div class="container">
+                        <h2 class="formTitle">Select Template</h2>
+                        <p class="draftStatus">Live previews with your own data. You can change colors, fonts and section order on the next page.</p>
+                        <div id="templateBox">
+                            <div id="templateItems" role="radiogroup" aria-label="Resume template"></div>
+                        </div>
+                        <button class="base-btn" id="createBtn" type="submit">Create Now</button>
+                    </div>
+                </section>
+            </form>
+        </main>
+        <!-- end main -->
+
+        <footer>
+            <div class="container">
+                <div class="footer-box">
+                    <div class="footer-item">
+                        <span>About</span>
+                        <p>
+                            A resume builder coded by Erfan Khadiv using vanilla
+                            JavaScript, HTML and CSS. Your data never leaves
+                            your browser.
+                        </p>
+                    </div>
+
+                    <div class="footer-item">
+                        <span>Learn More</span>
+                        <ul id="learnMore">
+                            <li><a href="https://github.com/ErfanKhadiv" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                            <li><a href="https://github.com/ErfanKhadiv/Workfolio" target="_blank" rel="noopener noreferrer">Source Code</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-item">
+                        <span>Contact</span>
+                        <ul id="icons">
+                            <li><a href="https://www.instagram.com/erphan.kh/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                            <li><a href="https://t.me/Erphan_Khadiv" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a></li>
+                            <li><a href="https://www.linkedin.com/in/erfan-khadiv-777a66279/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="assets/js/core.js"></script>
+        <script src="assets/js/index.js"></script>
+    </body>
+</html>

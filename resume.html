@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Resume | Workfolio</title>
+    <link rel="icon" href="assets/imgs/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/resume.css">
+    <link rel="stylesheet" href="assets/css/viewer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style id="pageStyle"></style>
+</head>
+<body>
+    <div id="app">
+        <aside id="panel" aria-label="Resume design options">
+            <a class="brand" href="index.html">Workfolio</a>
+
+            <div class="actions">
+                <a class="btn" href="index.html#formSec"><i class="fa-solid fa-pen"></i> Edit data</a>
+                <button class="btn primary" id="pdfBtn" type="button"><i class="fa-solid fa-download"></i> Download PDF</button>
+                <button class="btn" id="printBtn" type="button"><i class="fa-solid fa-print"></i> Print</button>
+                <button class="btn" id="txtBtn" type="button" title="Plain text, good for application forms and ATS"><i class="fa-solid fa-file-lines"></i> Text (ATS)</button>
+                <button class="btn" id="jsonBtn" type="button" title="Backup you can re-import later"><i class="fa-solid fa-file-export"></i> JSON backup</button>
+            </div>
+
+            <p id="pageInfo" class="pageInfo" aria-live="polite"></p>
+
+            <details open>
+                <summary>Template</summary>
+                <div id="templateButtons" class="tplButtons"></div>
+            </details>
+
+            <details open>
+                <summary>Colors &amp; fonts</summary>
+                <div class="field">
+                    <span class="lbl">Accent color</span>
+                    <div id="swatches" class="swatches"></div>
+                    <label class="custom">Custom <input type="color" id="accentInput"></label>
+                </div>
+                <label class="field">Font
+                    <select id="fontSelect"></select>
+                </label>
+                <label class="field">Skill style
+                    <select id="skillStyleSelect"></select>
+                </label>
+                <label class="field">Spacing
+                    <select id="densitySelect"></select>
+                </label>
+                <label class="field">Paper size
+                    <select id="paperSelect"></select>
+                </label>
+            </details>
+
+            <details open>
+                <summary>Show / hide</summary>
+                <label class="check"><input type="checkbox" id="showPhoto"> Profile photo</label>
+                <label class="check"><input type="checkbox" id="showAge"> Age</label>
+                <p class="lbl">Sections (use arrows to reorder)</p>
+                <ul id="sectionList" class="sectionList"></ul>
+            </details>
+
+            <button class="btn linkish" id="resetDesign" type="button"><i class="fa-solid fa-rotate-left"></i> Reset design</button>
+        </aside>
+
+        <main id="stage">
+            <div id="sampleBanner" class="banner" hidden>
+                This is sample data. <a href="index.html#formSec">Fill in your details</a> to see your own resume.
+            </div>
+            <div id="fit"><div id="scaler"><article id="resume"></article></div></div>
+        </main>
+    </div>
+
+    <script src="assets/js/core.js"></script>
+    <script src="assets/js/render.js"></script>
+    <script src="assets/js/viewer.js"></script>
+</body>
+</html>
