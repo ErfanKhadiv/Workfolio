@@ -4,7 +4,6 @@
 (() => {
     "use strict";
     const W = window.Workfolio;
-    const HTML2PDF_URL = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
 
     const $ = (id) => document.getElementById(id);
     const params = new URLSearchParams(location.search);
@@ -36,9 +35,21 @@
         $("fit").style.height = `${resume.offsetHeight * scale}px`;
     }
 
+    // keep entries and headings whole across pages (see paginate.js); the embedded preview shows page 1 only
+    function layoutPages() {
+        if (preview) return;
+        W.paginate(resume, settings.paper, { numbers: settings.showPageNumbers });
+    }
+
+    function relayout() {
+        layoutPages();
+        fit();
+        updatePageInfo();
+    }
+
     function updatePageInfo() {
         const page = W.PAGE[settings.paper];
-        const pages = Math.max(1, Math.ceil((resume.offsetHeight - 4) / page.h));
+        const pages = Number(resume.dataset.pages) || Math.max(1, Math.ceil((resume.offsetHeight - 4) / page.h));
         const info = $("pageInfo");
         info.classList.toggle("warn", pages > 1);
         info.textContent = pages === 1
@@ -50,8 +61,7 @@
         W.render(data, resume);
         $("pageStyle").textContent = `@page { size: ${settings.paper === "a4" ? "A4" : "letter"}; margin: 0; }`;
         document.title = `${W.fullName(data.personal) || "Your Resume"} - Resume | Workfolio`;
-        fit();
-        updatePageInfo();
+        relayout();
         persist();
     }
 
@@ -113,7 +123,7 @@
     bindSelect("densitySelect", W.DENSITIES, "density");
     bindSelect("paperSelect", W.PAPERS, "paper");
 
-    ["showPhoto", "showAge"].forEach((key) => {
+    ["showPhoto", "showAge", "showPageNumbers"].forEach((key) => {
         $(key).checked = settings[key];
         $(key).addEventListener("change", (e) => {
             settings[key] = e.target.checked;
@@ -172,6 +182,7 @@
         });
         $("showPhoto").checked = settings.showPhoto;
         $("showAge").checked = settings.showAge;
+        $("showPageNumbers").checked = settings.showPageNumbers;
         buildTemplates();
         buildSwatches();
         buildSections();
@@ -179,52 +190,18 @@
     });
 
     // ---------- exports ----------
-    function loadHtml2pdf() {
-        if (window.html2pdf) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const s = document.createElement("script");
-            s.src = HTML2PDF_URL;
-            s.crossOrigin = "anonymous";
-            s.referrerPolicy = "no-referrer";
-            s.onload = resolve;
-            s.onerror = () => reject(new Error("html2pdf could not be loaded"));
-            document.head.append(s);
-        });
-    }
-
-    async function downloadPdf() {
-        const btn = $("pdfBtn");
-        const original = btn.innerHTML;
-        btn.disabled = true;
-        btn.textContent = "Preparing...";
-        const host = document.createElement("div");
-        host.className = "pdf-host";
-        try {
-            await loadHtml2pdf();
-            if (document.fonts?.ready) await document.fonts.ready;
-            host.append(resume.cloneNode(true)); // unscaled copy so the PDF is always full size
-            document.body.append(host);
-            await window
-                .html2pdf()
-                .set({
-                    margin: 0,
-                    filename: `${W.fileBase(data)}.pdf`,
-                    image: { type: "jpeg", quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
-                    jsPDF: { unit: "mm", format: settings.paper, orientation: "portrait" },
-                    pagebreak: { mode: ["css", "legacy"], avoid: [".item", ".skill-row", ".sec h2"] },
-                })
-                .from(host.firstChild)
-                .save();
-        } catch (err) {
-            console.error(err);
-            alert("Could not create the PDF automatically. The print dialog will open - choose \"Save as PDF\" there.");
-            window.print();
-        } finally {
-            host.remove();
-            btn.disabled = false;
-            btn.innerHTML = original;
-        }
+    // The browser's own "Save as PDF" keeps text as real vector text (sharp at any zoom,
+    // selectable, readable by ATS) and honours the page breaks laid out by paginate.js.
+    // The document title becomes the suggested file name.
+    function downloadPdf() {
+        const previousTitle = document.title;
+        const restore = () => {
+            document.title = previousTitle;
+            window.removeEventListener("afterprint", restore);
+        };
+        window.addEventListener("afterprint", restore);
+        document.title = W.fileBase(data);
+        window.print();
     }
 
     $("pdfBtn").addEventListener("click", downloadPdf);
@@ -235,7 +212,7 @@
     // ---------- init ----------
     window.addEventListener("resize", fit);
     if (window.ResizeObserver) new ResizeObserver(() => { fit(); updatePageInfo(); }).observe(resume);
-    if (document.fonts?.ready) document.fonts.ready.then(() => { fit(); updatePageInfo(); });
+    if (document.fonts?.ready) document.fonts.ready.then(relayout); // web fonts / icons change text heights
 
     buildTemplates();
     buildSwatches();

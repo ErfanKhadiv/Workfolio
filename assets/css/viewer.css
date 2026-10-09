@@ -23,6 +23,7 @@ body { margin: 0; background: #e5e7eb; font-family: "Poppins", system-ui, sans-s
 .btn:disabled { opacity: .6; cursor: wait; }
 .btn.linkish { border-color: transparent; margin-top: 14px; color: #6b7280; }
 
+.pdfHint { font-size: .76rem; line-height: 1.4; margin: 10px 0 0; color: #6b7280; }
 .pageInfo { font-size: .82rem; margin: 12px 0 4px; color: #4b5563; }
 .pageInfo.warn { color: #b45309; }
 
@@ -64,8 +65,12 @@ body.preview #panel, body.preview .banner { display: none; }
 body.preview #stage { padding: 0; overflow: hidden; }
 body.preview #scaler { box-shadow: none; }
 
-/* ---------- PDF host (off-screen, unscaled copy) ---------- */
-.pdf-host { position: fixed; left: -10000px; top: 0; }
+/* ---------- page-break helpers (see assets/js/paginate.js) ---------- */
+.pg-guide {
+    position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed rgba(100, 116, 139, .75);
+    z-index: 5; pointer-events: none; font: 600 10px/1 "Poppins", system-ui, sans-serif; color: #64748b;
+}
+.pg-guide { text-align: right; padding-right: 8px; }
 
 @media (max-width: 900px) {
     #app { display: block; }
@@ -73,7 +78,8 @@ body.preview #scaler { box-shadow: none; }
 }
 
 @media print {
-    body { background: #fff; }
+    html, body { margin: 0; background: #fff; }
+    .pg-guide { display: none !important; }
     #panel, .banner { display: none !important; }
     #app { display: block; }
     #stage { padding: 0; overflow: visible; }

@@ -66,11 +66,19 @@
 .r-age { color: var(--muted); font-size: .92em; }
 .r-first { font-weight: inherit; }
 
+/* page numbers (added by paginate.js when the resume has more than one page) */
+.pg-num {
+    position: absolute; right: 28px; height: 14px; z-index: 4;
+    font-size: 10px; line-height: 14px; font-weight: 500; letter-spacing: .04em; color: #64748b;
+    pointer-events: none;
+}
+
 /* single-column templates flatten the aside/main wrappers so sections can be re-ordered */
 .tpl-1 .r-body, .tpl-4 .r-body { display: flex; flex-direction: column; }
 .tpl-1 .r-side, .tpl-1 .r-main, .tpl-4 .r-side, .tpl-4 .r-main { display: contents; }
 .tpl-1 .r-contact-side, .tpl-1 .r-photo-side, .tpl-1 .sec-contact,
 .tpl-4 .r-contact-side, .tpl-4 .r-photo-side, .tpl-4 .sec-contact { display: none; }
+.tpl-4 .sec.sec-contact { display: none; } /* beats the later .tpl-4 .sec { display: grid } rule */
 
 /* =============== 1 - Classic =============== */
 .tpl-1 { --ff-default: 'Lora', Georgia, 'Times New Roman', serif; padding: 44px 52px; }

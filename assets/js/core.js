@@ -67,6 +67,7 @@
             paper: "a4",
             showPhoto: true,
             showAge: true,
+            showPageNumbers: true,
             hidden: [],
             order: SECTIONS.map((s) => s.id),
         };
@@ -98,6 +99,7 @@
         if (raw.paper in PAPERS) s.paper = raw.paper;
         if (typeof raw.showPhoto === "boolean") s.showPhoto = raw.showPhoto;
         if (typeof raw.showAge === "boolean") s.showAge = raw.showAge;
+        if (typeof raw.showPageNumbers === "boolean") s.showPageNumbers = raw.showPageNumbers;
         const ids = SECTIONS.map((x) => x.id);
         if (Array.isArray(raw.hidden)) s.hidden = raw.hidden.filter((id) => ids.includes(id));
         if (Array.isArray(raw.order)) {

@@ -26,6 +26,8 @@
                 <button class="btn" id="jsonBtn" type="button" title="Backup you can re-import later"><i class="fa-solid fa-file-export"></i> JSON backup</button>
             </div>
 
+            <p class="pdfHint">Download PDF opens your browser's print dialog. Choose <b>Save as PDF</b> for a sharp PDF with selectable text.</p>
+
             <p id="pageInfo" class="pageInfo" aria-live="polite"></p>
 
             <details open>
@@ -58,6 +60,7 @@
                 <summary>Show / hide</summary>
                 <label class="check"><input type="checkbox" id="showPhoto"> Profile photo</label>
                 <label class="check"><input type="checkbox" id="showAge"> Age</label>
+                <label class="check" title="Shown at the bottom of each page when the resume has more than one page"><input type="checkbox" id="showPageNumbers"> Page numbers</label>
                 <p class="lbl">Sections (use arrows to reorder)</p>
                 <ul id="sectionList" class="sectionList"></ul>
             </details>
@@ -75,6 +78,7 @@
 
     <script src="assets/js/core.js"></script>
     <script src="assets/js/render.js"></script>
+    <script src="assets/js/paginate.js"></script>
     <script src="assets/js/viewer.js"></script>
 </body>
 </html>

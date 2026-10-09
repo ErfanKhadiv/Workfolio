@@ -12,6 +12,18 @@ Built with **vanilla JavaScript, HTML and CSS** - no frameworks, no build step, 
 Build, customize, and export your resume directly in your browser — no installation required.
 
 
+## Screenshots
+
+![All five templates](assets/imgs/screenshots/templates-overview.png)
+*The five templates, filled with the built-in sample data.*
+
+| Fill in the form | Pick a template (live previews) |
+| --- | --- |
+| ![Form](assets/imgs/screenshots/form.png) | ![Template picker](assets/imgs/screenshots/template-picker.png) |
+
+![Resume viewer with the design panel](assets/imgs/screenshots/viewer.png)
+*The viewer: restyle the resume live (template, accent color, font, spacing, paper size, section order) and export it.*
+
 ## Features
 
 **Content**
@@ -25,11 +37,12 @@ Build, customize, and export your resume directly in your browser — no install
 - Live template previews that use *your* data
 - Accent color picker, font choice, skill style (bars / stars / tags), spacing and paper size (A4 / US Letter)
 - Show / hide and re-order any section; hide photo or age
+- Page-aware layout: entries and headings are never cut by a page break, dashed page guides show where each page ends, and multi-page resumes get "Page 1 of 2" numbers (can be switched off)
 - Page counter that tells you when the resume spills onto a second page
 
 **Services**
 - Resume-strength score with concrete tips
-- Download PDF (html2pdf.js) or print
+- Download PDF or print: sharp vector PDF with selectable text (ATS-friendly), made with the browser's own "Save as PDF"
 - Plain-text export for application forms and ATS
 - JSON export / import for backups and moving between devices
 - One-click sample data to explore the templates
@@ -64,20 +77,21 @@ Workfolio/
     ├── js/
     │   ├── core.js         # data model, migration, sample data, score, text export
     │   ├── render.js       # builds the resume DOM from the data
+    │   ├── paginate.js     # page-break layout: keeps entries and headings whole across pages
     │   ├── index.js        # form logic, validation, autosave, previews
     │   └── viewer.js       # design panel, PDF / print / export
-    └── imgs/
+    └── imgs/               # logo, avatar and README screenshots
 ```
 
 ## How it works
 
 1. `index.js` collects the form into one JSON object (`core.js` normalises and saves it).
-2. `resume.html` loads it, `render.js` builds the resume, and `viewer.js` applies design changes live.
+2. `resume.html` loads it, `render.js` builds the resume, `paginate.js` lays out the page breaks, and `viewer.js` applies design changes live.
 3. A template is just a CSS block (`.tpl-N` in `resume.css`), so adding one needs no extra JavaScript.
 
 ## Tech
 
-JavaScript (ES2020) - HTML5 - CSS3 - [Font Awesome Free](https://fontawesome.com) - [html2pdf.js](https://github.com/eKoopmans/html2pdf.js) - Google Fonts (Inter, Lora, Poppins)
+JavaScript (ES2020) - HTML5 - CSS3 - [Font Awesome Free](https://fontawesome.com) - Google Fonts (Inter, Lora, Poppins)
 
 ## Author
 
