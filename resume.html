@@ -7,6 +7,7 @@
     <link rel="icon" href="assets/imgs/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/resume.css">
     <link rel="stylesheet" href="assets/css/viewer.css">
+    <link rel="stylesheet" href="assets/css/ai.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +35,7 @@
                 <button class="btn" id="jsonBtn" type="button" title="Backup you can re-import later"><i class="fa-solid fa-file-export"></i> JSON backup</button>
                 <button class="btn" id="docxBtn" type="button" title="Export an editable Word document"><i class="fa-brands fa-file-word"></i> Word (.docx)</button>
                 <button class="btn" id="xlsxBtn" type="button" title="Spreadsheet with one sheet per section"><i class="fa-solid fa-file-excel"></i> Excel (.xlsx)</button>
+                <button class="btn ai-launch" id="aiBtn" type="button" title="Compare your resume with a job posting, on this device"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Job Match</button>
             </div>
 
             <p class="pdfHint">Download PDF opens your browser's print dialog. Choose <b>Save as PDF</b> for a sharp PDF with selectable text.</p>
@@ -94,6 +96,9 @@
     <script src="assets/js/excel-export.js"></script>
     <script src="assets/js/render.js"></script>
     <script src="assets/js/paginate.js"></script>
+    <!-- AI Job Match: runs in the browser; the embedding model is only downloaded when you click Analyze. -->
+    <script src="assets/js/ai-match.js"></script>
+    <script src="assets/js/ai-panel.js"></script>
     <script src="assets/js/viewer.js"></script>
 </body>
 </html>

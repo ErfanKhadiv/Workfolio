@@ -1,6 +1,6 @@
 # Workfolio
 
-A free, browser-based resume builder. Follow a guided form, pick one of **five templates**, restyle it live, and export your resume as PDF, editable Word, Excel, or plain text.
+A free, browser-based resume builder. Follow a guided form, pick one of **five templates**, restyle it live, and export your resume as PDF, editable Word, Excel, or plain text. An on-device **AI Job Match** tool compares your resume with a job posting and tells you what to fix.
 Built with **vanilla JavaScript, HTML and CSS** - no app framework, build step, or backend.
 
 > Your resume data stays in your browser and is saved in `localStorage`. The Word and Excel exports are built in the browser without any library; resume content is never uploaded.
@@ -32,6 +32,18 @@ Build, customize, and export your resume directly in your browser — no install
 - Interests, with validation and inline error messages
 - Guided, step-by-step form with progress, Back / Next controls, example placeholders, and autosave
 - Draft that survives reloads (and migrates data saved by older versions)
+
+**AI Job Match** (runs in your browser)
+
+- Paste a job description and get a match score, a requirement-by-requirement breakdown with the resume line that backs each one, and the skills the posting mentions that your resume does not
+- Semantic matching with sentence embeddings (`all-MiniLM-L6-v2` through Transformers.js) and cosine similarity, combined with a skill-dictionary keyword check
+- Works without the model too: if it cannot be downloaded (or you untick it), it falls back to TF-IDF keyword matching and says so
+- Concrete suggestions, plus a **Tailor** button that moves your most relevant bullets and skills to the top. It only reorders, never rewrites, and it can be undone
+
+**Clean page breaks**
+
+- Entries are never cut in half, and sections can split between entries, so pages stay full instead of leaving blank gaps
+- In sidebar templates, if the sidebar is only slightly too tall for page 1, its spacing tightens automatically so contact, skills and languages stay on the first page
 
 **Design**
 - 5 templates: Classic (ATS-friendly), Sidebar, Banner, Minimal, Executive
@@ -77,7 +89,8 @@ Workfolio/
     ├── css/
     │   ├── style.css       # landing page / form
     │   ├── viewer.css      # design panel layout and print rules
-    │   └── resume.css      # the resume itself: shared base + 5 templates
+    │   ├── resume.css      # the resume itself: shared base + 5 templates
+    │   └── ai.css          # AI Job Match dialog
     ├── js/
     │   ├── core.js         # data model, migration, sample data, score, text export
     │   ├── render.js       # builds the resume DOM from the data
@@ -85,6 +98,8 @@ Workfolio/
     │   ├── zip.js          # tiny ZIP writer shared by the Office exporters
     │   ├── word-export.js  # .docx exporter (template-aware WordprocessingML)
     │   ├── excel-export.js # .xlsx exporter (one sheet per section)
+    │   ├── ai-match.js     # AI Job Match engine: embeddings, keyword analysis, tailoring plan
+    │   ├── ai-panel.js     # AI Job Match dialog (UI)
     │   ├── index.js        # form logic, validation, autosave, previews
     │   └── viewer.js       # design panel, PDF / print / export buttons
     └── imgs/               # logo, avatar and README screenshots
@@ -96,9 +111,20 @@ Workfolio/
 2. `resume.html` loads it, `render.js` builds the resume, `paginate.js` lays out the page breaks, and `viewer.js` applies design changes live.
 3. A template is just a CSS block (`.tpl-N` in `resume.css`), so adding one needs no extra JavaScript.
 
+### AI Job Match
+
+1. The job description is split into requirement lines. The whole resume is split into chunks: the title and summary, every bullet, every project, job and education entry as a whole, skills, certifications, languages and interests.
+2. Each requirement is compared with every chunk using two signals: sentence embeddings (`all-MiniLM-L6-v2`, quantized ONNX, about 25 MB, run by Transformers.js in WebAssembly) and TF-IDF word overlap with a small synonym list (so "thesis" can find a final project). A requirement counts as supported if either signal finds good evidence anywhere in the resume.
+3. Skills and exam names that a requirement mentions (about 150 in a built-in dictionary, plus IELTS/TOEFL and similar) are checked against the whole resume, and a few non-skill concepts (papers/manuscripts, research, hands-on projects) are matched by the words a resume uses to show them.
+4. Soft skills such as problem-solving or teamwork cannot be proven by keywords, so they are shown as "Soft skill" with advice instead of being called a gap.
+5. The overall score blends requirement fit (60% with the model, 50% without) and keyword coverage. Thresholds are hand-tuned heuristics, not a hiring prediction.
+6. Tailor reorders bullets and skills by relevance; the previous order is kept so it can be restored.
+
+Privacy: the model files are fetched from a CDN the first time and cached by the browser. Your resume and the job text are never sent anywhere. Without network access it uses keyword matching only.
+
 ## Tech
 
-JavaScript (ES2020) - HTML5 - CSS3 - [Font Awesome Free](https://fontawesome.com) - Google Fonts (Inter, Lora, Poppins)
+JavaScript (ES2020) - HTML5 - CSS3 - [Transformers.js](https://github.com/xenova/transformers.js) (on-device embeddings, loaded on demand) - [Font Awesome Free](https://fontawesome.com) - Google Fonts (Inter, Lora, Poppins)
 
 ## Author
 

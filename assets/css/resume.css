@@ -138,7 +138,7 @@
 .tpl-4 .r-title { color: var(--accent); text-transform: uppercase; letter-spacing: .16em; font-size: .86em; margin-top: 8px; font-weight: 600; }
 .tpl-4 .r-contact-inline { display: flex; flex-wrap: wrap; gap: 3px 18px; margin-top: 14px; color: var(--muted); font-size: .94em; }
 .tpl-4 .sec { display: grid; grid-template-columns: 128px 1fr; gap: 0 22px; padding-top: var(--sec); border-top: 1px solid var(--rule); }
-.tpl-4 .sec h2 { color: var(--muted); font-size: .76em; letter-spacing: .16em; margin: 3px 0 0; }
+.tpl-4 .sec h2 { color: var(--muted); font-size: .76em; letter-spacing: .16em; margin: 3px 0 0; align-self: start; }
 .tpl-4 .sec h2 i { display: none; }
 .tpl-4 .sec-body { min-width: 0; }
 
@@ -159,6 +159,18 @@
 .tpl-5 .r-side .r-contact i { color: var(--accent); }
 .tpl-5 .r-main .sec h2 { border-left: 4px solid var(--accent); padding-left: 9px; color: var(--ink); }
 .tpl-5 .r-main .sec h2 i { display: none; }
+
+/* sidebar tightening, set by paginate.js (data-tight) only when the sidebar would not fit on page 1 */
+.resume[data-tight] .r-side .sec { margin-bottom: calc(var(--sec) * .72); }
+.resume[data-tight] .r-side .r-contact li { margin-bottom: 4px; }
+.resume[data-tight] .r-side .skill-row { margin-bottom: 5px; }
+.resume[data-tight] .r-side .chips { gap: 4px; }
+.resume[data-tight="2"] .r-side, .resume[data-tight="3"] .r-side { padding-top: 22px; padding-bottom: 22px; line-height: 1.4; }
+.resume[data-tight="2"] .r-side .sec h2, .resume[data-tight="3"] .r-side .sec h2 { margin-bottom: 6px; }
+.resume[data-tight="2"] .r-side .chip, .resume[data-tight="3"] .r-side .chip { padding: 1px 9px; border-radius: 12px; }
+.resume[data-tight="3"] .r-side { font-size: .95em; }
+.resume[data-tight="3"] .r-side .sec { margin-bottom: calc(var(--sec) * .55); }
+.resume[data-tight="3"] .r-side .r-contact li { margin-bottom: 2px; }
 
 /* resumes with no photo / small screens still look right in preview iframes */
 @media print {

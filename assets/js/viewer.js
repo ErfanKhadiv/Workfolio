@@ -394,4 +394,15 @@ ${clone.outerHTML}
     buildSwatches();
     buildSections();
     refresh();
+
+    // AI Job Match (assets/js/ai-panel.js). It reorders skills/bullets through apply() so the
+    // normal render + autosave path is used; the embedded template previews never load it.
+    if (!preview && window.WorkfolioAIPanel) {
+        window.WorkfolioAIPanel.init({
+            button: $("aiBtn"),
+            getData: () => data,
+            isSample: () => usingSample,
+            apply: (change) => { change(data); refresh(); },
+        });
+    }
 })();

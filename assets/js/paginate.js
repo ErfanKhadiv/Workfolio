@@ -5,6 +5,10 @@
  * continuation page gets the same breathing room at the top and bottom.
  * The result is what you see on screen AND what the browser prints, so the PDF
  * matches the preview. Returns the number of pages.
+ *
+ * Sidebar templates: if the sidebar would spill onto page 2, the sidebar spacing is
+ * tightened in up to three steps (data-tight="1".."3", see resume.css) until it fits on
+ * page 1. Small sidebar sections (contact, languages...) always move as one piece.
  */
 (function (W) {
     "use strict";
@@ -18,15 +22,29 @@
     function clear(root) {
         root.querySelectorAll(".pg-spacer, .pg-guide, .pg-num").forEach((n) => n.remove());
         root.style.minHeight = "";
+        delete root.dataset.tight;
     }
 
     // blocks that must stay in one piece. The first block of a section travels with its heading.
+    const SIDE_WHOLE_MAX = 240; // sidebar sections up to this height (px) are never split
+
+    // a real sidebar is a column of its own (single-column templates flatten it with display: contents)
+    function realSide(root) {
+        const side = root.querySelector(".r-side");
+        return side && getComputedStyle(side).display !== "contents" ? side : null;
+    }
+
     function collectUnits(root) {
         const units = [];
+        const side = realSide(root);
         root.querySelectorAll(".sec").forEach((sec) => {
             const body = sec.querySelector(":scope > .sec-body");
             if (!body) return; // contact block: small and always at the top
             const h2 = sec.querySelector(":scope > h2");
+            if (side && side.contains(sec) && sec.offsetHeight <= SIDE_WHOLE_MAX) {
+                units.push({ nodes: [sec], target: sec, sec });
+                return;
+            }
             Array.from(body.children).filter((c) => !c.classList.contains("pg-spacer")).forEach((child, i) => {
                 units.push({ nodes: i === 0 ? [h2, child] : [child], target: i === 0 ? sec : child, sec });
             });
@@ -44,15 +62,16 @@
     function measure(unit, rootRect, scale) {
         const rects = unit.nodes.map((n) => n.getBoundingClientRect());
         const top = Math.min(...rects.map((r) => r.top));
-        const bottom = Math.max(...rects.map((r) => r.bottom));
+        // Only the last node decides the bottom. In templates with a label column (Minimal) the heading
+        // is stretched to the height of the whole section, which used to make the section's first entry
+        // look as tall as the entire section and pushed all of it to the next page.
+        const bottom = rects[rects.length - 1].bottom;
         return { top: (top - rootRect.top) / scale, bottom: (bottom - rootRect.top) / scale };
     }
 
-    function paginate(root, paper) {
-        const H = W.PAGE[paper].h;
-        clear(root);
+    // moves every block that would cross a page boundary onto the next page
+    function layout(root, H) {
         const padBottom = bottomSpace(root);
-
         let guard = 400;
         while (guard-- > 0) {
             const rootRect = root.getBoundingClientRect();
@@ -82,6 +101,27 @@
                 moved = true;
             }
             if (!moved) break;
+        }
+    }
+
+    // true when a sidebar section starts on page 2 or later
+    function sideSpills(root, H) {
+        const side = realSide(root);
+        if (!side) return false;
+        const rootRect = root.getBoundingClientRect();
+        const scale = rootRect.width / root.offsetWidth || 1;
+        return Array.from(side.querySelectorAll(":scope > .sec")).some((sec) => (sec.getBoundingClientRect().top - rootRect.top) / scale >= H - 1);
+    }
+
+    function paginate(root, paper) {
+        const H = W.PAGE[paper].h;
+
+        // try the normal spacing first, then tighten the sidebar until it fits on the first page
+        for (let level = 0; level <= 3; level++) {
+            clear(root);
+            if (level) root.dataset.tight = String(level);
+            layout(root, H);
+            if (level === 3 || !sideSpills(root, H)) break;
         }
 
         const pages = Math.max(1, Math.ceil((root.offsetHeight - 4) / H));
