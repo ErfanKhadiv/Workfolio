@@ -16,7 +16,14 @@
     "use strict";
 
     const MODEL = "Xenova/all-MiniLM-L6-v2";
-    const TRANSFORMERS_URL = "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js";
+    // The library is tried from each CDN in turn; the model weights from each host in turn
+// (huggingface.co is blocked or filtered on some networks, so a mirror is the second choice).
+const LIBRARY_URLS = [
+        "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js",
+        "https://unpkg.com/@xenova/transformers@2.17.2/dist/transformers.min.js",
+    ];
+    const MODEL_HOSTS = ["https://huggingface.co/", "https://hf-mirror.com/"];
+    const STALL_MS = 30000; // give up on a download that has produced no progress for this long
 
     // Raw cosine thresholds. MiniLM scores related sentences around 0.45-0.75 and
     // unrelated ones below ~0.2; TF-IDF scores are lower because they need word overlap.
@@ -588,24 +595,73 @@
     // ---------- browser-only: load the embedding model ----------
     let embedderPromise = null;
 
-    function loadEmbedder(onProgress) {
-        if (embedderPromise) return embedderPromise;
-        embedderPromise = (async () => {
-            const mod = await import(TRANSFORMERS_URL);
+    function loadError(code, message, detail) {
+        const e = new Error(message);
+        e.code = code;
+        e.detail = detail ? String(detail).slice(0, 300) : "";
+        return e;
+    }
+
+    async function importLibrary() {
+        const problems = [];
+        for (const url of LIBRARY_URLS) {
+            try {
+                const mod = await import(url);
+                if (!mod || typeof mod.pipeline !== "function") throw new Error("unexpected module contents");
+                try { mod.env.backends.onnx.wasm.wasmPaths = url.slice(0, url.lastIndexOf("/") + 1); } catch (e) { /* default location */ }
+                return mod;
+            } catch (error) {
+                problems.push(`${new URL(url).host}: ${error && error.message ? error.message : error}`);
+            }
+        }
+        throw loadError("library", "the AI library could not be downloaded from the CDN (an ad blocker, firewall or offline connection can cause this)", problems.join(" | "));
+    }
+
+    async function loadPipeline(mod, onProgress) {
+        const problems = [];
+        for (const host of MODEL_HOSTS) {
+            mod.env.remoteHost = host;
             mod.env.allowLocalModels = false;
             mod.env.useBrowserCache = true;
             const files = {};
-            const extractor = await mod.pipeline("feature-extraction", MODEL, {
-                quantized: true,
-                progress_callback: (p) => {
-                    if (p && p.status === "progress" && p.file && onProgress) {
-                        files[p.file] = { loaded: p.loaded || 0, total: p.total || 0 };
-                        const all = Object.values(files);
-                        const total = all.reduce((a, f) => a + f.total, 0);
-                        if (total) onProgress(all.reduce((a, f) => a + f.loaded, 0) / total);
-                    }
-                },
+            let lastEvent = Date.now();
+            let timer;
+            const stalled = new Promise((_, reject) => {
+                timer = setInterval(() => {
+                    if (Date.now() - lastEvent > STALL_MS) reject(new Error("download stalled"));
+                }, 1000);
             });
+            try {
+                const extractor = await Promise.race([
+                    mod.pipeline("feature-extraction", MODEL, {
+                        quantized: true,
+                        progress_callback: (p) => {
+                            lastEvent = Date.now();
+                            if (p && p.status === "progress" && p.file && onProgress) {
+                                files[p.file] = { loaded: p.loaded || 0, total: p.total || 0 };
+                                const all = Object.values(files);
+                                const total = all.reduce((x, f) => x + f.total, 0);
+                                if (total) onProgress(all.reduce((x, f) => x + f.loaded, 0) / total);
+                            }
+                        },
+                    }),
+                    stalled,
+                ]);
+                return extractor;
+            } catch (error) {
+                problems.push(`${new URL(host).host}: ${error && error.message ? error.message : error}`);
+            } finally {
+                clearInterval(timer);
+            }
+        }
+        throw loadError("model", "the model files could not be downloaded (huggingface.co and its mirror are unreachable or blocked on this network)", problems.join(" | "));
+    }
+
+    function loadEmbedder(onProgress) {
+        if (embedderPromise) return embedderPromise;
+        embedderPromise = (async () => {
+            const mod = await importLibrary();
+            const extractor = await loadPipeline(mod, onProgress);
             const cache = new Map();
             return async function embed(texts) {
                 const out = new Array(texts.length);

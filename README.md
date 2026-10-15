@@ -120,7 +120,7 @@ Workfolio/
 5. The overall score blends requirement fit (60% with the model, 50% without) and keyword coverage. Thresholds are hand-tuned heuristics, not a hiring prediction.
 6. Tailor reorders bullets and skills by relevance; the previous order is kept so it can be restored.
 
-Privacy: the model files are fetched from a CDN the first time and cached by the browser. Your resume and the job text are never sent anywhere. Without network access it uses keyword matching only.
+Privacy: the library (jsDelivr, with unpkg as a fallback) and the model files (Hugging Face, with hf-mirror.com as a fallback) are fetched the first time and cached by the browser. If neither can be reached, the dialog says why and falls back to keyword matching. Your resume and the job text are never sent anywhere. Without network access it uses keyword matching only.
 
 ## Tech
 

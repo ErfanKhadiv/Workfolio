@@ -23,6 +23,7 @@
         root.querySelectorAll(".pg-spacer, .pg-guide, .pg-num").forEach((n) => n.remove());
         root.style.minHeight = "";
         delete root.dataset.tight;
+        root.querySelectorAll(".pg-last").forEach((sec) => { sec.classList.remove("pg-last"); sec.style.marginBottom = ""; });
     }
 
     // blocks that must stay in one piece. The first block of a section travels with its heading.
@@ -113,6 +114,29 @@
         return Array.from(side.querySelectorAll(":scope > .sec")).some((sec) => (sec.getBoundingClientRect().top - rootRect.top) / scale >= H - 1);
     }
 
+    // The last section of every column keeps no bottom margin. That margin is trailing space, not content,
+    // but when the content ends just inside a page it pushed the page over its height: the page counter said
+    // "2 pages" and a completely blank second page was added (and printed).
+    function trimTrailingMargins(root) {
+        const flowParent = (el) => {
+            let p = el.parentElement;
+            while (p && getComputedStyle(p).display === "contents") p = p.parentElement;
+            return p;
+        };
+        const lowest = new Map();
+        root.querySelectorAll(".sec").forEach((sec) => {
+            const r = sec.getBoundingClientRect();
+            if (!r.height) return; // hidden (for example the contact block in single-column templates)
+            const key = flowParent(sec);
+            const cur = lowest.get(key);
+            if (!cur || r.bottom > cur.bottom) lowest.set(key, { sec, bottom: r.bottom });
+        });
+        lowest.forEach(({ sec }) => {
+            sec.classList.add("pg-last");
+            sec.style.marginBottom = "0";
+        });
+    }
+
     function paginate(root, paper) {
         const H = W.PAGE[paper].h;
 
@@ -124,6 +148,7 @@
             if (level === 3 || !sideSpills(root, H)) break;
         }
 
+        trimTrailingMargins(root);
         const pages = Math.max(1, Math.ceil((root.offsetHeight - 4) / H));
         root.style.minHeight = `calc(${PAGE_CSS[paper](pages)} - 1px)`; // fills every page (sidebar colours, banners)
         root.dataset.pages = String(pages);

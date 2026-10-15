@@ -156,7 +156,7 @@ Nice to have
                     embed = await AI.loadEmbedder((p) => setStatus("Downloading the language model (first time only)...", p));
                 } catch (error) {
                     console.warn("Embedding model unavailable, using keyword matching", error);
-                    fellBack = true;
+                    fellBack = { reason: error && error.message ? error.message : "unknown error", detail: error && error.detail ? error.detail : "" };
                 }
             }
             setStatus(embed ? "Comparing your resume with the posting..." : "Analyzing keywords...");
@@ -215,7 +215,7 @@ Nice to have
         const modeNote = a.mode === "semantic"
             ? "Semantic matching with an on-device AI model (MiniLM sentence embeddings)."
             : a.fellBack
-                ? "The AI model could not be loaded (offline or blocked), so this run used keyword matching only."
+                ? `The AI model could not be loaded: ${a.fellBack.reason}. This run used keyword matching only. Press Analyze again to retry.`
                 : "Keyword matching only. Turn on the AI model for meaning-based matching.";
 
         const parts = [
@@ -225,7 +225,8 @@ Nice to have
                 h("div", {},
                     h("h3", {}, a.overall >= 70 ? "Strong match" : a.overall >= 45 ? "Partial match" : "Weak match"),
                     h("p", { class: "ai-break" }, breakdown.join(" \u00b7 ")),
-                    h("p", { class: "ai-mode" }, modeNote))),
+                    h("p", { class: "ai-mode" }, modeNote),
+                    a.fellBack && a.fellBack.detail ? h("details", { class: "ai-tech" }, h("summary", {}, "Technical details"), h("p", {}, a.fellBack.detail)) : null)),
 
             h("h3", { class: "ai-h" }, "Skills in the posting"),
             a.skills.length

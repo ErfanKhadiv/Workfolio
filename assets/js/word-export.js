@@ -84,6 +84,11 @@
             return `<w:r><w:rPr>${pr}</w:rPr>${body}</w:r>`;
         }
         const TAB = "<w:r><w:tab/></w:r>";
+        // The sidebar is short and never needs keep-with-next. Left in, a keep-with-next on the first sidebar paragraph
+        // made Word/LibreOffice treat the whole body table as unsplittable and push it to page 2 (page 1 = banner only).
+        const noKeep = (xml) => xml.replace(/<w:keep(Next|Lines)\/>/g, "");
+        // same trigger when the main column is the first cell (Executive): only the very first paragraph matters
+        const dropFirstKeep = (xml) => xml.replace("<w:keepNext/>", "");
 
         function link(runs, url) {
             const href = url ? (url.startsWith("mailto:") ? url : W.safeUrl(url)) : null;
@@ -188,7 +193,8 @@
 
         function levelRow(name, rate, total, mark, ctx, last) {
             const dots = run(mark.repeat(rate), { color: ctx.dotOn, size: hp(0.85) }) + run(mark.repeat(total - rate), { color: ctx.dotOff, size: hp(0.85) });
-            return para([run(name, { color: ctx.fg }), TAB, dots], { tabRight: ctx.width, after: last ? 0 : 90, keepNext: !last });
+            // rows of a list are not chained together (a long keep-with-next chain makes Word/LibreOffice move the whole column)
+            return para([run(name, { color: ctx.fg }), TAB, dots], { tabRight: ctx.width, after: last ? 0 : 90 });
         }
 
         const sectionBodies = {
@@ -257,7 +263,7 @@
                     const mark = s.skillStyle === "stars" ? "\u2605" : "\u25cf";
                     const hasNote = Boolean(note);
                     out.push(
-                        para([run(clean(x.name), { color: ctx.fg }), TAB, run(mark.repeat(W.LEVEL_RATE[clean(x.level)] || 2), { color: ctx.dotOn, size: hp(0.85) }) + run(mark.repeat(5 - (W.LEVEL_RATE[clean(x.level)] || 2)), { color: ctx.dotOff, size: hp(0.85) })], { tabRight: ctx.width, after: hasNote ? 0 : last ? 0 : 90, keepNext: hasNote || !last })
+                        para([run(clean(x.name), { color: ctx.fg }), TAB, run(mark.repeat(W.LEVEL_RATE[clean(x.level)] || 2), { color: ctx.dotOn, size: hp(0.85) }) + run(mark.repeat(5 - (W.LEVEL_RATE[clean(x.level)] || 2)), { color: ctx.dotOff, size: hp(0.85) })], { tabRight: ctx.width, after: hasNote ? 0 : last ? 0 : 90, keepNext: hasNote })
                     );
                     if (hasNote) out.push(para(run(note, { color: ctx.muted, size: hp(0.86) }), { after: last ? 0 : 90 }));
                 });
@@ -382,7 +388,7 @@
             const sCtx = sideCtx(sideW - sMar.l - sMar.r);
             const mCtx = mainCtx(mainW - mMar.l - mMar.r);
             const sideSections = ids.filter(isSide);
-            const sideXml = (photo ? para(picture(140, "ellipse", { px: 4, color: blend(accent, "FFFFFF", 0.55) }), { align: "center", after: px(24) }) : "") + contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0);
+            const sideXml = noKeep((photo ? para(picture(140, "ellipse", { px: 4, color: blend(accent, "FFFFFF", 0.55) }), { align: "center", after: px(24) }) : "") + contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0));
             const mainHead =
                 para(nameRuns(INK, hp(2.5), false), { after: 80, line: 276 }) +
                 (clean(p.title) ? para(run(clean(p.title).toUpperCase(), { b: true, color: accent, size: hp(1.0), spacing: 36 }), { after: showAge ? 40 : 0 }) : "") +
@@ -413,7 +419,7 @@
             const sCtx = sideCtx(sideW - sMar.l - sMar.r);
             const mCtx = mainCtx(mainW - mMar.l - mMar.r);
             const sideSections = ids.filter(isSide);
-            const sideXml = contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0);
+            const sideXml = noKeep(contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0));
             body.push(table([{ height: { val: page.h - bannerH - 40 - 40 - 60, rule: "atLeast" }, cells: [{ w: sideW, fill: "F3F4F6", mar: sMar, content: sideXml }, { w: mainW, mar: mMar, content: sectionsXml(ids.filter((id) => !isSide(id)), mCtx) }] }]));
             body.push(SPACER);
         } else {
@@ -437,8 +443,8 @@
             const mCtx = mainCtx(mainW - mMar.l - mMar.r);
             const sCtx = sideCtx(sideW - sMar.l - sMar.r);
             const sideSections = ids.filter(isSide);
-            const sideXml = contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0);
-            body.push(table([{ height: { val: page.h - headH - 40 - 40 - 60, rule: "atLeast" }, cells: [{ w: mainW, mar: mMar, content: sectionsXml(ids.filter((id) => !isSide(id)), mCtx) }, { w: sideW, fill: "F1F5F9", mar: sMar, content: sideXml }] }]));
+            const sideXml = noKeep(contactSection(sCtx) + sideSectionsXml(sideSections, sCtx, contactItems().length > 0));
+            body.push(table([{ height: { val: page.h - headH - 40 - 40 - 60, rule: "atLeast" }, cells: [{ w: mainW, mar: mMar, content: dropFirstKeep(sectionsXml(ids.filter((id) => !isSide(id)), mCtx)) }, { w: sideW, fill: "F1F5F9", mar: sMar, content: sideXml }] }]));
             body.push(SPACER);
         }
 

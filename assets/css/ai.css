@@ -47,6 +47,10 @@ body.ai-open { overflow: hidden; }
 .ai-break { margin: 0; font-size: .86rem; color: #374151; }
 .ai-mode { margin: 4px 0 0; font-size: .78rem; color: #6b7280; max-width: 46ch; }
 
+.ai-tech { margin-top: 6px; font-size: .74rem; color: #6b7280; }
+.ai-tech summary { cursor: pointer; }
+.ai-tech p { margin: 4px 0 0; word-break: break-word; font-family: ui-monospace, Menlo, Consolas, monospace; }
+
 .ai-ring { --tone: #2563eb; flex: none; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center;
     background: conic-gradient(var(--tone) var(--p), #e5e7eb 0); }
 .ai-ring.good { --tone: #059669; }
