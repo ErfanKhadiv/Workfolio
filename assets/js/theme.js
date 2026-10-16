@@ -28,15 +28,6 @@
         });
         requestAnimationFrame(function () { root.classList.add("theme-ready"); });
 
-        // follow the system setting until the visitor picks a theme themselves
-        var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
-        if (mq && mq.addEventListener) {
-            mq.addEventListener("change", function (e) {
-                var saved = null;
-                try { saved = localStorage.getItem(KEY); } catch (err) {}
-                if (!saved) apply(e.matches ? "dark" : "light", false);
-            });
-        }
         // keep several open tabs in sync
         window.addEventListener("storage", function (e) {
             if (e.key === KEY && (e.newValue === "dark" || e.newValue === "light")) apply(e.newValue, false);

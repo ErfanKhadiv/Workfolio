@@ -73,7 +73,7 @@
             try {
                 var preview = /[?&]preview=1/.test(location.search);   /* template thumbnails stay light */
                 var saved = localStorage.getItem("workfolio-theme");
-                if (!preview) theme = saved || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                if (!preview) theme = saved === "dark" ? "dark" : "light";   /* default is light; dark only if the visitor chose it */
             } catch (e) {}
             document.documentElement.setAttribute("data-theme", theme);
         })();

@@ -32,7 +32,7 @@ Build, customize, and export your resume directly in your browser — no install
 - Interests, with validation and inline error messages
 - Guided, step-by-step form with progress, Back / Next controls, example placeholders, and autosave
 - Draft that survives reloads (and migrates data saved by older versions)
-- Dark / light mode toggle on both pages: follows the system setting on first visit, remembers your choice, and never changes the resume itself or its PDF / Word / Excel exports
+- Dark / light mode toggle on both pages: starts in light mode and remembers your choice, and never changes the resume itself or its PDF / Word / Excel exports
 
 **AI Job Match** (runs in your browser)
 
