@@ -1,0 +1,154 @@
+/* Workfolio - dark / light theme.
+   Light is the default look. Dark overrides only apply on screen, so printing,
+   PDF export and the resume itself always stay exactly as designed. */
+
+/* ---------- toggle button ---------- */
+.theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; padding: 0;
+    border: 2px solid #2563eb; border-radius: 50%;
+    background: #fff; color: #2563eb;
+    font-size: 1rem; line-height: 1; cursor: pointer;
+    transition: background-color .25s, color .25s, border-color .25s, transform .2s;
+}
+.theme-toggle:hover { transform: rotate(18deg); }
+.theme-toggle svg { display: block; }
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* landing page: fixed top-right */
+nav .theme-toggle { position: fixed; top: 30px; right: 24px; z-index: 50; box-shadow: 0 4px 14px rgba(15, 23, 42, .15); }
+/* resume viewer: sits beside the brand */
+#panel .panel-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+#panel .panel-top .brand { margin-bottom: 0; }
+@media (max-width: 640px) { nav .theme-toggle { top: 14px; right: 12px; width: 40px; height: 40px; } }
+@media print { .theme-toggle { display: none !important; } }
+
+/* ---------- dark theme (screen only) ---------- */
+@media screen {
+    [data-theme="dark"] { color-scheme: dark; }
+    [data-theme="dark"] body { background: #0b1220; color: #e5e7eb; }
+    [data-theme="dark"] header#top p, [data-theme="dark"] #formSec p { color: #cbd5e1; }
+    [data-theme="dark"] :root, :root[data-theme="dark"] {
+        --blue: #3b82f6; --blue-hover: #5b9bf8; --blue-active: #7aaefa;
+        --gray: #131c30; --text: #e5e7eb;
+    }
+    [data-theme="dark"] .blue-color { color: #60a5fa; }
+    [data-theme="dark"] .gray1-color { color: #e5e7eb; }
+
+    /* toggle */
+    [data-theme="dark"] .theme-toggle { background: #131c30; color: #fbbf24; border-color: #334155; }
+
+    /* landing header: invert the white illustration so it blends into the dark page */
+    [data-theme="dark"] header#top { background: #0b1220; position: relative; isolation: isolate; border-bottom-color: #263248; }
+    [data-theme="dark"] header#top::before {
+        content: ""; position: absolute; inset: 0; z-index: -1;
+        background: url(../imgs/header-img1.png) center / cover no-repeat;
+        filter: invert(1) hue-rotate(180deg);
+        mix-blend-mode: lighten;
+    }
+    [data-theme="dark"] #formSec { border-bottom-color: #263248; }
+
+    /* buttons */
+    [data-theme="dark"] .ghost-btn { background: #131c30; color: #93c5fd; border-color: #3b82f6; }
+    [data-theme="dark"] .ghost-btn:hover { background: #3b82f6; color: #fff; }
+    [data-theme="dark"] .ghost-btn.danger { color: #f87171; border-color: #f87171; }
+    [data-theme="dark"] .ghost-btn.danger:hover { background: #dc2626; color: #fff; }
+
+    /* form */
+    [data-theme="dark"] #formBox { background: #131c30; }
+    [data-theme="dark"] .formGroup { border-bottom-color: #263248; }
+    [data-theme="dark"] .baseInput { background: #0b1220; color: #e5e7eb; border-color: #334155; }
+    [data-theme="dark"] .baseInput::placeholder { color: #64748b; }
+    [data-theme="dark"] .baseInput:hover, [data-theme="dark"] .baseInput:focus { border-color: #60a5fa; }
+    [data-theme="dark"] .draftStatus, [data-theme="dark"] .counter, [data-theme="dark"] .fieldHint,
+    [data-theme="dark"] .photo-crop-help, [data-theme="dark"] .wizard-step-intro p { color: #94a3b8 !important; }
+    [data-theme="dark"] .wizard-step-intro h3 { color: #f1f5f9; }
+    [data-theme="dark"] .entry { background: #0f172a; border-color: #263248; }
+    [data-theme="dark"] #photoPreview { border-color: #131c30; box-shadow: 0 0 0 2px #334155; }
+    [data-theme="dark"] .scoreCard { background: #0f172a; border-color: #263248; }
+    [data-theme="dark"] .scoreBar, [data-theme="dark"] .wizard-progress-track { background: #263248; }
+    [data-theme="dark"] #scoreTips { color: #94a3b8; }
+    [data-theme="dark"] .tplThumb { border-color: #334155; }
+    [data-theme="dark"] .tplCard small { color: #94a3b8; }
+    [data-theme="dark"] .tplCard.selected { border-color: #60a5fa; }
+    @media (max-width: 640px) {
+        [data-theme="dark"] .wizard-nav { background: #131c30; border-color: #263248; }
+    }
+
+    /* photo cropper dialog */
+    [data-theme="dark"] .photo-crop-dialog { color: #e5e7eb; }
+    [data-theme="dark"] .photo-crop-card { background: #131c30; }
+    [data-theme="dark"] .photo-crop-head h2 { color: #f1f5f9; }
+    [data-theme="dark"] .photo-crop-head p, [data-theme="dark"] .photo-crop-zoom output { color: #94a3b8; }
+    [data-theme="dark"] .photo-crop-close { background: #0b1220; border-color: #334155; color: #cbd5e1; }
+    [data-theme="dark"] .photo-crop-canvas-wrap { background: #0b1220; border-color: #334155; }
+
+    /* ---------- resume viewer (resume.html) ---------- */
+    [data-theme="dark"] body.preview { background: #fff; }      /* template thumbnails stay white */
+    [data-theme="dark"] #stage { background: #0b1220; }
+    [data-theme="dark"] #app { background: #0b1220; }
+    [data-theme="dark"] #panel { background: #0f172a; border-right-color: #263248; }
+    [data-theme="dark"] .brand { color: #60a5fa; }
+    [data-theme="dark"] .btn { background: #131c30; color: #93c5fd; border-color: #3b82f6; }
+    [data-theme="dark"] .btn.primary { background: #3b82f6; color: #fff; }
+    [data-theme="dark"] .btn.ghost { border-color: #334155; color: #94a3b8; }
+    [data-theme="dark"] .btn.linkish { color: #94a3b8; }
+    [data-theme="dark"] .btn.ai-launch { background: #172554; }
+    [data-theme="dark"] .pdfHint { color: #94a3b8; }
+    [data-theme="dark"] .pageInfo { color: #cbd5e1; }
+    [data-theme="dark"] .pageInfo.warn { color: #fbbf24; }
+    [data-theme="dark"] details { border-top-color: #263248; }
+    [data-theme="dark"] .field select { background: #0b1220; color: #e5e7eb; border-color: #334155; }
+    [data-theme="dark"] .tplBtn { background: #131c30; border-color: #334155; color: #e5e7eb; }
+    [data-theme="dark"] .tplBtn small { color: #94a3b8; }
+    [data-theme="dark"] .tplBtn.active { background: #172554; border-color: #60a5fa; }
+    [data-theme="dark"] .swatch { border-color: #0f172a; box-shadow: 0 0 0 1px #64748b; }
+    [data-theme="dark"] .swatch.active { box-shadow: 0 0 0 3px #f1f5f9; }
+    [data-theme="dark"] .sectionList button { background: #131c30; border-color: #334155; color: #e5e7eb; }
+    [data-theme="dark"] .banner { background: #3a2e0a; border-color: #854d0e; color: #fde68a; }
+    [data-theme="dark"] .banner a { color: #fcd34d; }
+    [data-theme="dark"] #scaler { box-shadow: 0 4px 30px rgba(0, 0, 0, .6); }
+    [data-theme="dark"] #mobilePreviewViewport { background: #0b1220; border-color: #263248; }
+    [data-theme="dark"] .preview-toggle { background: #172554; color: #93c5fd; border-color: #3b82f6; }
+    @media (max-width: 900px) {
+        [data-theme="dark"] .mobile-preview-dock:not([hidden]) { background: rgba(15, 23, 42, .97); border-bottom-color: #263248; }
+        [data-theme="dark"] #mobilePreviewDock.preview-expanded,
+        [data-theme="dark"] body.preview-expanded #mobilePreviewDock { background: #0b1220; }
+    }
+
+    /* ---------- AI Job Match dialog ---------- */
+    [data-theme="dark"] .ai-dialog { background: #0f172a; color: #e5e7eb; }
+    [data-theme="dark"] .ai-head, [data-theme="dark"] .ai-input { border-color: #263248; }
+    [data-theme="dark"] .ai-head h2 { color: #93c5fd; }
+    [data-theme="dark"] .ai-head p, [data-theme="dark"] .ai-privacy, [data-theme="dark"] .ai-muted,
+    [data-theme="dark"] .ai-mode, [data-theme="dark"] .ai-tech, [data-theme="dark"] .ai-check small,
+    [data-theme="dark"] .ai-evidence, [data-theme="dark"] .ai-ring-in span { color: #94a3b8; }
+    [data-theme="dark"] .ai-evidence b, [data-theme="dark"] .ai-sub, [data-theme="dark"] .ai-break,
+    [data-theme="dark"] .ai-status, [data-theme="dark"] .ai-msg { color: #cbd5e1; }
+    [data-theme="dark"] .ai-close { background: #131c30; border-color: #334155; color: #cbd5e1; }
+    [data-theme="dark"] .ai-close:hover { background: #1e293b; }
+    [data-theme="dark"] .ai-input textarea { background: #0b1220; color: #e5e7eb; border-color: #334155; }
+    [data-theme="dark"] .ai-input textarea:focus { border-color: #60a5fa; }
+    [data-theme="dark"] .ai-bar { background: #263248; }
+    [data-theme="dark"] .ai-error { background: #3b0d12; border-color: #7f1d1d; color: #fecaca; }
+    [data-theme="dark"] .ai-note { background: #3a2e0a; border-color: #854d0e; color: #fde68a; }
+    [data-theme="dark"] .ai-h { border-top-color: #263248; }
+    [data-theme="dark"] .ai-ring { background: conic-gradient(var(--tone) var(--p), #263248 0); }
+    [data-theme="dark"] .ai-ring-in { background: #0f172a; }
+    [data-theme="dark"] .ai-req { border-color: #263248; }
+    [data-theme="dark"] .ai-chips .ok { background: #052e22; border-color: #047857; color: #6ee7b7; }
+    [data-theme="dark"] .ai-chips .miss { background: #3a2e0a; border-color: #854d0e; color: #fcd34d; }
+    [data-theme="dark"] .gap .ai-tag { background: #4c0519; color: #fda4af; }
+    [data-theme="dark"] .partial .ai-tag { background: #451a03; color: #fcd34d; }
+    [data-theme="dark"] .strong .ai-tag { background: #052e22; color: #6ee7b7; }
+    [data-theme="dark"] .soft .ai-tag { background: #263248; color: #cbd5e1; }
+}
+
+/* Smooth colour change only after the first paint, so there is no flash on load */
+html.theme-ready body, html.theme-ready #formBox, html.theme-ready #panel, html.theme-ready .baseInput,
+html.theme-ready .entry, html.theme-ready .scoreCard, html.theme-ready .btn, html.theme-ready .ghost-btn {
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+@media (prefers-reduced-motion: reduce) { html.theme-ready * { transition: none !important; } }

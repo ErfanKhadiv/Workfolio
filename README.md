@@ -32,6 +32,7 @@ Build, customize, and export your resume directly in your browser — no install
 - Interests, with validation and inline error messages
 - Guided, step-by-step form with progress, Back / Next controls, example placeholders, and autosave
 - Draft that survives reloads (and migrates data saved by older versions)
+- Dark / light mode toggle on both pages: follows the system setting on first visit, remembers your choice, and never changes the resume itself or its PDF / Word / Excel exports
 
 **AI Job Match** (runs in your browser)
 
@@ -90,7 +91,8 @@ Workfolio/
     │   ├── style.css       # landing page / form
     │   ├── viewer.css      # design panel layout and print rules
     │   ├── resume.css      # the resume itself: shared base + 5 templates
-    │   └── ai.css          # AI Job Match dialog
+    │   ├── ai.css          # AI Job Match dialog
+    │   └── theme.css       # dark / light theme and the toggle button
     ├── js/
     │   ├── core.js         # data model, migration, sample data, score, text export
     │   ├── render.js       # builds the resume DOM from the data
@@ -101,7 +103,8 @@ Workfolio/
     │   ├── ai-match.js     # AI Job Match engine: embeddings, keyword analysis, tailoring plan
     │   ├── ai-panel.js     # AI Job Match dialog (UI)
     │   ├── index.js        # form logic, validation, autosave, previews
-    │   └── viewer.js       # design panel, PDF / print / export buttons
+    │   ├── viewer.js       # design panel, PDF / print / export buttons
+    │   └── theme.js        # dark / light toggle (saved in localStorage)
     └── imgs/               # logo, avatar and README screenshots
 ```
 
